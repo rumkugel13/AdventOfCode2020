@@ -36,7 +36,7 @@ namespace Day03
             treesMultiplied *= TreeCount(1, 2);
 
             Console.WriteLine("Solution: " + treesMultiplied);
-            // Solution: -
+            // Solution: 6708199680
         }
 
         private static int TreeCount(int width, int height)
