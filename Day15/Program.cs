@@ -26,7 +26,7 @@ namespace Day15
 
             SolvePart1();
             //SolvePart2(); // ~7 seconds
-            SolvePart2Faster(); // ~3 seconds
+            SolvePart2Faster(); // ~1.5 seconds
         }
 
         private static void SolvePart1()
@@ -117,29 +117,22 @@ namespace Day15
 
             const int turns = 30000000;
 
-            Dictionary<int, int> turnByNum = new Dictionary<int, int>();
+            int[] turnByNum = new int[turns];
 
             int turn = 0;
             for (int i = 0; i < numbers.Length; i++)
             {
-                turnByNum[numbers[i]] = turn++;
+                turnByNum[numbers[i]] = 1 + turn++;
             }
 
             int lastNum = numbers[numbers.Length - 1];
 
-            while (turn < turns)
+            for (; turn < turns; turn++)
             {
-                int number = 0;
+                int number = turnByNum[lastNum] != 0 ? turn - turnByNum[lastNum] : 0;
 
-                if (turnByNum.TryGetValue(lastNum, out int value))
-                {
-                    number = turn - 1 - value;
-                }
-
-                turnByNum[lastNum] = turn - 1;
+                turnByNum[lastNum] = turn;
                 lastNum = number;
-
-                turn++;
             }
 
             Console.WriteLine("Solution: " + lastNum);
