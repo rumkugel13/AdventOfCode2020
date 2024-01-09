@@ -27,7 +27,7 @@ namespace Day20
 
                 Tile tile;
                 tile.ID = id;
-                tile.Neighbours = new int[4];
+                tile.Neighbours = new List<Tile>();
                 tile.Orientations = new string[8][];
                 tile.Edges = new string[8];
 
@@ -115,7 +115,7 @@ namespace Day20
         struct Tile
         {
             public int ID;
-            public int[] Neighbours;
+            public List<Tile> Neighbours;
             public string[][] Orientations;
             public string[] Edges;
         }
@@ -125,7 +125,6 @@ namespace Day20
             Console.WriteLine("Solving Part 1");
             long result = 1;
 
-            Dictionary<int, int> neighbours = new Dictionary<int, int>();
             for (int i = 0; i < tiles.Count; i++)
             {
                 Tile A = tiles[i];
@@ -134,25 +133,11 @@ namespace Day20
                     Tile B = tiles[j];
                     if (IsNeighbour(A, B))
                     {
-                        if (neighbours.ContainsKey(A.ID))
-                        {
-                            neighbours[A.ID]++;
-                        }
-                        else
-                        {
-                            neighbours[A.ID] = 1;
-                        }
-                        if (neighbours.ContainsKey(B.ID))
-                        {
-                            neighbours[B.ID]++;
-                        }
-                        else
-                        {
-                            neighbours[B.ID] = 1;
-                        }
+                        tiles[i].Neighbours.Add(tiles[j]);
+                        tiles[j].Neighbours.Add(tiles[i]);
                     }
                 }
-                if (neighbours[A.ID] == 2)
+                if (tiles[i].Neighbours.Count == 2)
                 {
                     result *= A.ID;
                     Console.WriteLine(A.ID);
@@ -160,7 +145,7 @@ namespace Day20
             }
 
             Console.WriteLine("Solution: " + result);
-            // Solution: -
+            // Solution: 140656720229539
         }
 
         private static bool IsNeighbour(Tile A, Tile B)
