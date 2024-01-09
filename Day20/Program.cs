@@ -8,11 +8,11 @@ namespace Day20
 {
     class Program
     {
-        private static Dictionary<int, Tile> tiles;
+        private static List<Tile> tiles;
 
         static void Main(string[] args)
         {
-            tiles = new Dictionary<int, Tile>();
+            tiles = new List<Tile>();
             var lines = File.ReadAllLines("input.txt");
 
             for (int i = 0; i < lines.Length; i++)
@@ -26,15 +26,34 @@ namespace Day20
                 }
 
                 Tile tile;
+                tile.ID = id;
                 tile.Neighbours = new int[4];
-                tile.Orientations = new string[4][];
+                tile.Orientations = new string[8][];
+                tile.Edges = new string[8];
+
+                tile.Edges[0] = new string(image[0].ToCharArray());
+                tile.Edges[2] = new string(image[image.Length - 1].ToCharArray());
+                var temp = RotateCW(image);
+                tile.Edges[1] = new string(temp[temp.Length - 1].ToCharArray());
+                tile.Edges[3] = new string(temp[0].ToCharArray());
+                for (int j = 0; j < 4; j++)
+                {
+                    var newArray = tile.Edges[j].ToCharArray();
+                    Array.Reverse(newArray);
+                    tile.Edges[j + 4] = new string(newArray);
+                }
+
                 tile.Orientations[0] = image;
                 tile.Orientations[1] = RotateCW(tile.Orientations[0]);
                 tile.Orientations[2] = RotateCW(tile.Orientations[1]);
                 tile.Orientations[3] = RotateCW(tile.Orientations[2]);
+                tile.Orientations[4] = Flip(tile.Orientations[0]);
+                tile.Orientations[5] = Flip(tile.Orientations[1]);
+                tile.Orientations[6] = Flip(tile.Orientations[2]);
+                tile.Orientations[7] = Flip(tile.Orientations[3]);
 
                 //PrintTile(tile);
-                tiles[id] = tile;
+                tiles.Add(tile);
             }
 
             SolvePart1();
@@ -54,10 +73,19 @@ namespace Day20
             }
         }
 
-        //private static string[] Flip(string[] image)
-        //{
+        private static string[] Flip(string[] image)
+        {
+            string[] flipped = new string[image.Length];
 
-        //}
+            for (int i = 0; i < image.Length; i++)
+            {
+                var temp = image[i].ToCharArray();
+                Array.Reverse(temp);
+                flipped[i] = new string(temp);
+            }
+
+            return flipped;
+        }
 
         private static string[] RotateCW(string[] image)
         {
@@ -86,18 +114,67 @@ namespace Day20
 
         struct Tile
         {
+            public int ID;
             public int[] Neighbours;
             public string[][] Orientations;
+            public string[] Edges;
         }
 
         private static void SolvePart1()
         {
             Console.WriteLine("Solving Part 1");
+            long result = 1;
 
+            Dictionary<int, int> neighbours = new Dictionary<int, int>();
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                Tile A = tiles[i];
+                for (int j = i + 1; j < tiles.Count; j++)
+                {
+                    Tile B = tiles[j];
+                    if (IsNeighbour(A, B))
+                    {
+                        if (neighbours.ContainsKey(A.ID))
+                        {
+                            neighbours[A.ID]++;
+                        }
+                        else
+                        {
+                            neighbours[A.ID] = 1;
+                        }
+                        if (neighbours.ContainsKey(B.ID))
+                        {
+                            neighbours[B.ID]++;
+                        }
+                        else
+                        {
+                            neighbours[B.ID] = 1;
+                        }
+                    }
+                }
+                if (neighbours[A.ID] == 2)
+                {
+                    result *= A.ID;
+                    Console.WriteLine(A.ID);
+                }
+            }
 
-
-            //Console.WriteLine("Solution: " + count);
+            Console.WriteLine("Solution: " + result);
             // Solution: -
+        }
+
+        private static bool IsNeighbour(Tile A, Tile B)
+        {
+            foreach (var edgeA in A.Edges)
+            {
+                foreach (var edgeB in B.Edges)
+                {
+                    if (edgeA == edgeB)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         private static void SolvePart2()
