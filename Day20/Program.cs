@@ -29,19 +29,6 @@ namespace Day20
                 tile.ID = id;
                 tile.Neighbours = new List<int>();
                 tile.Orientations = new string[8][];
-                tile.Edges = new string[8];
-
-                tile.Edges[0] = new string(image[0].ToCharArray());
-                tile.Edges[2] = new string(image[image.Length - 1].ToCharArray());
-                var temp = RotateCW(image);
-                tile.Edges[1] = new string(temp[temp.Length - 1].ToCharArray());
-                tile.Edges[3] = new string(temp[0].ToCharArray());
-                for (int j = 0; j < 4; j++)
-                {
-                    var newArray = tile.Edges[j].ToCharArray();
-                    Array.Reverse(newArray);
-                    tile.Edges[j + 4] = new string(newArray);
-                }
 
                 tile.Orientations[0] = image;
                 tile.Orientations[1] = RotateCW(tile.Orientations[0]);
@@ -94,22 +81,14 @@ namespace Day20
             for (int x = 0; x < image.Length; x++)
             {
                 StringBuilder builder = new StringBuilder();
-                for (int y = 0; y < image.Length; y++)
+                for (int y = image.Length - 1; y >= 0; y--)
                 {
                     builder.Append(image[y][x]);
                 }
-                rotated[x] = new string(builder.ToString().Reverse().ToArray());
+                rotated[x] = builder.ToString();
             }
 
             return rotated;
-        }
-
-        enum Direction
-        {
-            Up,
-            Right,
-            Down,
-            Left
         }
 
         struct Tile
@@ -117,7 +96,12 @@ namespace Day20
             public int ID;
             public List<int> Neighbours;
             public string[][] Orientations;
-            public string[] Edges;
+        }
+
+        struct Neighbour
+        {
+            public int ID;
+            public int Edge;
         }
 
         private static void SolvePart1()
@@ -150,12 +134,14 @@ namespace Day20
 
         private static bool IsNeighbour(Tile A, Tile B)
         {
-            foreach (var edgeA in A.Edges)
+            for (int i = 0; i < A.Orientations.Length; i++)
             {
-                foreach (var edgeB in B.Edges)
+                for (int j = 0; j < B.Orientations.Length; j++)
                 {
-                    if (edgeA == edgeB)
-                        return true;
+                    if (A.Orientations[i][0] == B.Orientations[j][0])
+                    { 
+                        return true; 
+                    }
                 }
             }
 
