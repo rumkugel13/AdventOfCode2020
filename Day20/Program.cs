@@ -27,7 +27,7 @@ namespace Day20
 
                 Tile tile;
                 tile.ID = id;
-                tile.Neighbours = new List<Tile>();
+                tile.Neighbours = new List<int>();
                 tile.Orientations = new string[8][];
                 tile.Edges = new string[8];
 
@@ -115,7 +115,7 @@ namespace Day20
         struct Tile
         {
             public int ID;
-            public List<Tile> Neighbours;
+            public List<int> Neighbours;
             public string[][] Orientations;
             public string[] Edges;
         }
@@ -133,8 +133,8 @@ namespace Day20
                     Tile B = tiles[j];
                     if (IsNeighbour(A, B))
                     {
-                        tiles[i].Neighbours.Add(tiles[j]);
-                        tiles[j].Neighbours.Add(tiles[i]);
+                        tiles[i].Neighbours.Add(j);
+                        tiles[j].Neighbours.Add(i);
                     }
                 }
                 if (tiles[i].Neighbours.Count == 2)
